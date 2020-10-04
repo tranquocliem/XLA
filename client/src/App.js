@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import qr from "qr-encode";
+import axios from "axios";
+import QRCode from "qrcode";
 
 function App() {
   const [list, setList] = useState([]);
   const [form, setForm] = useState("");
-  const [index, setIndex] = useState("");
 
   const addToList = () => {
     if (!form || form.length < 6 || form.length > 10) {
@@ -13,6 +13,7 @@ function App() {
     }
 
     list.push({ mssv: form, verified: false });
+    getStudentInfo(form, list.length - 1);
     setList(list);
     setForm("");
   };
@@ -29,16 +30,36 @@ function App() {
     ]);
   };
 
-  const getQrImg = () => {
-    return list[index] && qr(list[index].mssv, { level: "L", size: 12 });
+  const getQrImg = (idx) => {
+    const canvas = document.getElementById("qr-canvas");
+    if (list[idx].error)
+      QRCode.toCanvas(canvas, JSON.stringify({}), {
+        scale: 8,
+      });
+    else if (canvas !== null)
+      QRCode.toCanvas(canvas, JSON.stringify(list[idx]), {
+        scale: 8,
+      });
+  };
+
+  const getStudentInfo = async (mssv, idx) => {
+    const { data } = await axios.get(`${mssv}`);
+    if (data.error)
+      setList([
+        ...list.slice(0, idx),
+        { mssv, fullname: "Không tìm thấy", avgScore: "Không tìm thấy" },
+        ...list.slice(idx + 1),
+      ]);
+    else setList([...list.slice(0, idx), { ...data }, ...list.slice(idx + 1)]);
   };
 
   return (
     <div className="container-fluid">
-      <div className="card mx-auto m-5 p-5 col-6 shadow bg-dark">
+      <div className="card mx-auto m-5 p-5 col-9 shadow bg-dark">
         <div className="row">
           <img
             src="https://nctu.edu.vn/dist/image/icon/logo.png"
+            alt="logo"
             style={{
               maxWidth: 150,
               maxHeight: 150,
@@ -46,10 +67,10 @@ function App() {
             className="mx-auto mb-5"
           />
         </div>
-        <div class="input-group mb-3 col-10 mx-auto">
+        <div className="input-group mb-3 col-10 mx-auto">
           <input
             type="number"
-            class="form-control add-item-inp px-3"
+            className="form-control add-item-inp px-3"
             placeholder="Nhập MSSV..."
             aria-label="Nhập MSSV..."
             value={form}
@@ -59,30 +80,36 @@ function App() {
                 addToList();
                 return;
               }
-              console.log(e.key);
             }}
             autoFocus
           />
         </div>
         {!!list.length && (
-          <div class="row mb-3 bordered rounded" style={{ padding: "15px" }}>
+          <div
+            className="row mb-3 bordered rounded"
+            style={{ padding: "15px" }}
+          >
             <div className="col col-10 mx-auto">
               <table
-                class="table table-hover table-dark"
+                className="table table-hover table-dark"
                 style={{ maxHeight: 250, overflow: "auto" }}
               >
-                <thead class="thead-inverse">
+                <thead className="thead-inverse">
                   <tr>
-                    <th>#</th>
-                    <th>MSSV</th>
+                    <th style={{ width: 50 }}>#</th>
+                    <th style={{ width: 150 }}>MSSV</th>
+                    <th>Họ tên</th>
+                    <th style={{ width: 180 }}>TB chung tích luỹ</th>
                     <th style={{ width: 150 }}></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {list.map(({ mssv, qrSrc, verified }, idx) => (
+                  {list.map(({ mssv, fullname, avgScore, verified }, idx) => (
                     <tr key={idx}>
                       <td>{idx + 1}</td>
                       <td>{mssv}</td>
+                      <td>{fullname}</td>
+                      <td>{avgScore}</td>
                       <td style={{ userSelect: "none" }}>
                         {(verified && (
                           <i
@@ -101,7 +128,7 @@ function App() {
                         )}
                         <i
                           className="material-icons text-info btn-icon mr-3"
-                          onClick={() => setIndex(idx)}
+                          onClick={() => getQrImg(idx)}
                           data-toggle="modal"
                           data-target="#qr"
                         >
@@ -122,27 +149,28 @@ function App() {
           </div>
         )}
       </div>
-      <div class="modal" tabindex="-1" role="dialog" id="qr">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">QR</h5>
+      <div className="modal" tabIndex="-1" role="dialog" id="qr">
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">QR</h5>
               <button
                 type="button"
-                class="close"
+                className="close"
                 data-dismiss="modal"
                 aria-label="Close"
               >
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body row">
-              <img src={getQrImg()} className="mx-auto" />
+            <div className="modal-body row">
+              {/* <img src={getQrImg()} alt="qr-code"/> */}
+              <canvas id="qr-canvas" className="mx-auto"></canvas>
             </div>
-            <div class="modal-footer">
+            <div className="modal-footer">
               <button
                 type="button"
-                class="btn btn-primary btn-block"
+                className="btn btn-primary btn-block"
                 data-dismiss="modal"
               >
                 Đóng

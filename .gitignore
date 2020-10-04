@@ -3,3 +3,6 @@ node_modules/
 mobile/node_modules/
 client/node_modules/
 client/build/
+.expo/
+mobile/.expo/
+mobile/.expo-shared/
