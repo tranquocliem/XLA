@@ -4,15 +4,15 @@ import qr from "qr-encode";
 function App() {
   const [list, setList] = useState([]);
   const [form, setForm] = useState("");
-  const [qrImg, setQRSrc] = useState("");
+  const [index, setIndex] = useState("");
 
   const addToList = () => {
     if (!form || form.length < 6 || form.length > 10) {
       alert("MSSV không hợp lệ!");
       return;
     }
-    const qrSrc = qr(form, { level: "L", size: 12 });
-    list.push({ mssv: form, qrSrc, verified: false });
+
+    list.push({ mssv: form, verified: false });
     setList(list);
     setForm("");
   };
@@ -27,6 +27,10 @@ function App() {
       { ...list[idx], verified },
       ...list.slice(idx + 1),
     ]);
+  };
+
+  const getQrImg = () => {
+    return list[index] && qr(list[index].mssv, { level: "L", size: 12 });
   };
 
   return (
@@ -97,7 +101,7 @@ function App() {
                         )}
                         <i
                           className="material-icons text-info btn-icon mr-3"
-                          onClick={() => setQRSrc(qrSrc)}
+                          onClick={() => setIndex(idx)}
                           data-toggle="modal"
                           data-target="#qr"
                         >
@@ -119,7 +123,7 @@ function App() {
         )}
       </div>
       <div class="modal" tabindex="-1" role="dialog" id="qr">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">QR</h5>
@@ -133,7 +137,7 @@ function App() {
               </button>
             </div>
             <div class="modal-body row">
-              <img src={qrImg} className="mx-auto" />
+              <img src={getQrImg()} className="mx-auto" />
             </div>
             <div class="modal-footer">
               <button

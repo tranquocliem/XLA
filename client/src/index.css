@@ -71,3 +71,20 @@ input[type="number"]:focus,
   border: white 1px solid;
   background: transparent;
 }
+
+tr {
+  animation: slide-down 0.5s;
+}
+
+@keyframes slide-down {
+  0% {
+    transform: scaleX(0.5);
+    transform: scaleY(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    transform: scalY(1);
+    opacity: 1;
+  }
+}
