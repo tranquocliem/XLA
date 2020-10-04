@@ -5,12 +5,14 @@ function App() {
   const [list, setList] = useState([]);
   const [form, setForm] = useState("");
   const [qrImg, setQRSrc] = useState("");
-  const [showQR, setShowQR] = useState(false);
 
   const addToList = () => {
-    if (!form) return;
+    if (!form || form.length < 6 || form.length > 10) {
+      alert("MSSV không hợp lệ!");
+      return;
+    }
     const qrSrc = qr(form, { level: "L", size: 12 });
-    list.unshift({ mssv: form, qrSrc, verified: false });
+    list.push({ mssv: form, qrSrc, verified: false });
     setList(list);
     setForm("");
   };
@@ -29,7 +31,7 @@ function App() {
 
   return (
     <div className="container-fluid">
-      <div className="card mx-auto m-5 p-5 col-6 shadow">
+      <div className="card mx-auto m-5 p-5 col-6 shadow bg-dark">
         <div className="row">
           <img
             src="https://nctu.edu.vn/dist/image/icon/logo.png"
@@ -43,7 +45,7 @@ function App() {
         <div class="input-group mb-3 col-10 mx-auto">
           <input
             type="number"
-            class="form-control"
+            class="form-control add-item-inp px-3"
             placeholder="Nhập MSSV..."
             aria-label="Nhập MSSV..."
             value={form}
@@ -55,21 +57,11 @@ function App() {
               }
               console.log(e.key);
             }}
-            minLength="6"
-            maxLength="10"
+            autoFocus
           />
-          <div class="input-group-append">
-            <button
-              class="btn btn-outline-success"
-              type="button"
-              onClick={addToList}
-            >
-              <i className="material-icons pt-2">add</i>
-            </button>
-          </div>
         </div>
         {!!list.length && (
-          <div class="row mb-3 bordered rounded">
+          <div class="row mb-3 bordered rounded" style={{ padding: "15px" }}>
             <div className="col col-10 mx-auto">
               <table
                 class="table table-hover table-dark"
@@ -79,7 +71,7 @@ function App() {
                   <tr>
                     <th>#</th>
                     <th>MSSV</th>
-                    <th>-</th>
+                    <th style={{ width: 150 }}></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -125,33 +117,32 @@ function App() {
             </div>
           </div>
         )}
-        <div class="modal" tabindex="-1" role="dialog" id="qr">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">QR</h5>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                  onClick={() => setShowQR(false)}
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body row">
-                <img src={qrImg} className="mx-auto" />
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-dismiss="modal"
-                >
-                  OK!
-                </button>
-              </div>
+      </div>
+      <div class="modal" tabindex="-1" role="dialog" id="qr">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">QR</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body row">
+              <img src={qrImg} className="mx-auto" />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary btn-block"
+                data-dismiss="modal"
+              >
+                Đóng
+              </button>
             </div>
           </div>
         </div>
