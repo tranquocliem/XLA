@@ -76,29 +76,40 @@ export default function App() {
             <Dialog.Title>Thông tin sinh viên</Dialog.Title>
             <Dialog.Content>
               {result && (
-                <Image
-                  style={{
-                    width:
-                      (loadImageResult &&
-                        Dimensions.get("screen").width / 1.4) ||
-                      0,
-                    height:
-                      (loadImageResult &&
-                        (Dimensions.get("screen").width * 4) / 3 / 1.4) ||
-                      0,
-                    justifyContent: "center",
-                  }}
-                  source={{
-                    uri: `http://student.nctu.edu.vn/GetImage.aspx?MSSV=${result.mssv}`,
-                  }}
-                  onLoadStart={() => {
-                    setIsLoadingImage(true);
-                  }}
-                  onLoadEnd={() => {
-                    setLoadImageResult(true);
-                    setIsLoadingImage(false);
-                  }}
-                ></Image>
+                <>
+                  <Image
+                    style={{
+                      width: 50,
+                      height: 50,
+                    }}
+                    source={{
+                      uri: `http://student.nctu.edu.vn/Images/favicon.png`,
+                    }}
+                  ></Image>
+                  <Image
+                    style={{
+                      width:
+                        (loadImageResult &&
+                          Dimensions.get("screen").width / 1.4) ||
+                        0,
+                      height:
+                        (loadImageResult &&
+                          (Dimensions.get("screen").width * 4) / 3 / 1.4) ||
+                        0,
+                      justifyContent: "center",
+                    }}
+                    source={{
+                      uri: `http://student.nctu.edu.vn/GetImage.aspx?MSSV=${result.mssv}`,
+                    }}
+                    onLoadStart={() => {
+                      setIsLoadingImage(true);
+                    }}
+                    onLoadEnd={() => {
+                      setLoadImageResult(true);
+                      setIsLoadingImage(false);
+                    }}
+                  ></Image>
+                </>
               )}
 
               {(!loadImageResult && isLoadingImage && (
