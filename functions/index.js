@@ -1,3 +1,4 @@
+const functions = require("firebase-functions");
 const exp = require("express");
 const app = require("express")();
 const axios = require("axios");
@@ -60,4 +61,4 @@ app.get("/:mssv", async (req, res) => {
   }
 });
 
-app.listen(5000, () => console.log("5000"));
+exports.getStudentInfo = functions.https.onRequest(app);

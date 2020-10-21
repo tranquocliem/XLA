@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index"
+    "start": "node index",
+    "client": "cd client && yarn start",
+    "mobile": "cd mobile && yarn start"
   },
   "keywords": [],
   "author": "",
